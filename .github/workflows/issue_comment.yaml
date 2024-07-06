@@ -2,22 +2,24 @@ name: Create a comment on new issues
 
 on:
   issues:
-    types: [opened]   #We want this to run whenever we open an issue
-    
+    types: [opened]   # We want this to run whenever we open an issue
+
 jobs:
-  comment-with-actions: #name of 1st job
+  comment-with-actions: # Name of the job
     runs-on: windows-latest
     steps:
-      - name: "dump github context" #As we need to comment on a action, we need that action here, so we
-                                  #need some context so we use concept of github which is github "Context"
-        run: echo "${{ toJSON(github.event) }}" | jq  #this is not  a shell command, provided by github
-        shell: powershell
+      - name: Dump GitHub context # As we need to comment on an action, we need that action here, so we
+                                  # need some context so we use concept of GitHub which is GitHub "Context"
+        run: |
+          $json = '${{ toJSON(github.event) }}'
+          $json | ConvertFrom-Json | ConvertTo-Json -Depth 100
+        shell: pwsh
 
-      #Picked up this below tempelate from market by googling github actions create and update comment
+      # Picked up this below template from the market by googling GitHub Actions create and update comment
       - name: Create comment   
         uses: peter-evans/create-or-update-comment@v4
         with:
-          issue-number: ${{ github.event.issue.number }}  #We r following the struc of the obj we get when we create an issue, this is where we get the issue number
+          issue-number: ${{ github.event.issue.number }}  # We are following the structure of the object we get when we create an issue, this is where we get the issue number
           body: |
             This is a multi-line test comment
             - With GitHub **Markdown** :sparkles:
@@ -25,6 +27,3 @@ jobs:
 
             [1]: https://github.com/peter-evans/create-or-update-comment
           reactions: '+1'
-      
-  
-  
