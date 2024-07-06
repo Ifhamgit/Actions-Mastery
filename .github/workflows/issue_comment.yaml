@@ -8,18 +8,16 @@ jobs:
   comment-with-actions: # Name of the job
     runs-on: windows-latest
     steps:
-      - name: Dump GitHub context # As we need to comment on an action, we need that action here, so we
-                                  # need some context so we use concept of GitHub which is GitHub "Context"
+      - name: Dump GitHub context
         run: |
           $json = '${{ toJSON(github.event) }}'
           $json | ConvertFrom-Json | ConvertTo-Json -Depth 100
         shell: pwsh
 
-      # Picked up this below template from the market by googling GitHub Actions create and update comment
       - name: Create comment   
         uses: peter-evans/create-or-update-comment@v4
         with:
-          issue-number: ${{ github.event.issue.number }}  # We are following the structure of the object we get when we create an issue, this is where we get the issue number
+          issue-number: ${{ github.event.issue.number }}
           body: |
             This is a multi-line test comment
             - With GitHub **Markdown** :sparkles:
@@ -35,17 +33,21 @@ jobs:
         run: choco install gh
         shell: cmd
 
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token $env:GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+
       - name: Create comment with API
         run: |
-          gh auth login --with-token $env:GITHUB_TOKEN
           gh api --method POST `
             -H "Accept: application/vnd.github+json" `
             -H "X-GitHub-Api-Version: 2022-11-28" `
-            "/repos/$env:ORGANIZATION/$env:REPO/issues/$env:ISSUE_NUMBER/comments" `
-            -f "body=Me too"
+            /repos/$env:GITHUB_REPOSITORY/issues/$env:ISSUE_NUMBER/comments `
+            -f body="Me too"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ORGANIZATION: ${{ github.event.organization.login }}
-          REPO: ${{ github.event.repository.name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         shell: pwsh
