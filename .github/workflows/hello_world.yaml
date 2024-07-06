@@ -1,0 +1,27 @@
+name: Hello World workflow
+
+on:
+  push:
+    branches:
+      -main
+    pull_request:
+      branches:
+        -main
+    workflow_dispatch      #Will give a button on the UI to trigger the process without pushing changes to the repo
+
+jobs:  #Jobs run parallely by default, steps in a job run sequentially
+  hello:  #Name of a job
+    runs-on: windows-latest
+    steps:
+      -uses: actions/checkout@v2       #Generally accesing actions repo of github which is public and using checkout and we are using version2
+      -name: Hello_World
+        run: echo "Hello the world"
+        shell: powershell
+
+  goodbye:   #Name of 2nd job
+    runs-on: windows-latest
+    steps:
+      -name: Goodbye_World
+        run: echo "Goodbye the world"
+        shell: powershell
+    
