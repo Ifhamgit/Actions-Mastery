@@ -7,7 +7,7 @@ on:
     pull_request:
       branches:
         -main
-    workflow_dispatch      #Will give a button on the UI to trigger the process without pushing changes to the repo
+    workflow_dispatch:      #Will give a button on the UI to trigger the process without pushing changes to the repo
 
 jobs:  #Jobs run parallely by default, steps in a job run sequentially
   hello:  #Name of a job
