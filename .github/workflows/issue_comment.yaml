@@ -38,9 +38,11 @@ jobs:
       - name: Create comment with API
         run: |
           gh auth login --with-token $env:GITHUB_TOKEN
-          gh api -X POST `
-            "https://api.github.com/repos/$env:ORGANIZATION/$env:REPO/issues/$env:ISSUE_NUMBER/comments" `
-            -f body="Comment from the API call not action"
+          gh api --method POST `
+            -H "Accept: application/vnd.github+json" `
+            -H "X-GitHub-Api-Version: 2022-11-28" `
+            "/repos/$env:ORGANIZATION/$env:REPO/issues/$env:ISSUE_NUMBER/comments" `
+            -f "body=Me too"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ORGANIZATION: ${{ github.event.organization.login }}
