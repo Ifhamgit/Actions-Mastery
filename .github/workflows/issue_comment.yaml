@@ -31,15 +31,19 @@ jobs:
   comment-with-api:
     runs-on: windows-latest
     steps:
+      - name: Install GitHub CLI
+        run: choco install gh
+        shell: cmd
+
       - name: Create comment with API
         run: |
-          gh api -X post \
-            http://api.github.com/repos/${ORGANIZATION}/${REPO}/issues/${ISSUE_NUMBER}/comments \
-            -f body="
-            Comment from the API call not action
-            "
+          gh auth login --with-token $env:GITHUB_TOKEN
+          gh api -X POST `
+            "https://api.github.com/repos/$env:ORGANIZATION/$env:REPO/issues/$env:ISSUE_NUMBER/comments" `
+            -f body="Comment from the API call not action"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-          ORGANIZATION: ${{ github.event.organisation.login}}
-          REPO: ${{github.event.repository.name}}
-          ISSUE_NUMBER: ${{github.event.issue.number}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ORGANIZATION: ${{ github.event.organization.login }}
+          REPO: ${{ github.event.repository.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        shell: pwsh
